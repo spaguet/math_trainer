@@ -35,33 +35,37 @@ def add_result(name, chapter, points, difficult):
     
 
 # ---------------------- Запрос 10 лучших результатов из БД
-def result_request(choice):
+def result_request(chapter, difficult):
     conn = sqlite3.connect('math_trainer.db')
     cursor = conn.cursor()
     
     query = '''
     SELECT id, name, chapter, result, difficult, datetime
     FROM results
-    WHERE chapter = ?
+    WHERE chapter = ? AND difficult = ?
     ORDER BY result DESC
     LIMIT 10;
     '''
     
-    cursor.execute(query, (choice,))
+    cursor.execute(query, (chapter, difficult,))
     
     results = cursor.fetchall()
-    place = 0
     
-    for row in results:
-        place += 1
-        print('----------------------------------------')
-        print(f'Место в рейтинге: {place}')
-        print(f'Имя: {row[1]}')
-        print(f'Раздел: {row[2]}')
-        print(f'Результат: {row[3]} очков')
-        print(f'Максимальный операнд: {row[4]}')
-        print(f'Дата: {row[5]}')
-        print('----------------------------------------')
+    if not results:
+        clear_terminal()
+        print('Ещё никто не пробовал свои силы в этом разделе. Пробуй ты!')
+    else:
+        place = 0
+        for row in results:
+            place += 1
+            print('----------------------------------------')
+            print(f'Место в рейтинге: {place}')
+            print(f'Имя: {row[1]}')
+            print(f'Раздел: {row[2]}')
+            print(f'Результат: {row[3]} очков')
+            print(f'Максимальный операнд: {row[4]}')
+            print(f'Дата: {row[5]}')
+            print('----------------------------------------')
     
     conn.close()
     
@@ -85,14 +89,48 @@ def show_best():
         choice = input('>>> ')
         
         if choice == '1':
-            result_request('Сложение')
+            choose_num_limit('Сложение')
         elif choice == '2':
-            result_request('Вычитание')
+            choose_num_limit('Вычитание')
         elif choice == '3':
-            result_request('Умножение')
+            choose_num_limit('Умножение')
         elif choice == '4':
-            result_request('Деление')
+            choose_num_limit('Деление')
         elif choice == '5':
+            main()
+        else:
+            print('Неверный запрос. Попробуй ещё раз!')
+
+
+# ---------------------- Меню выбора раздела ТОП-10 результатов
+def choose_num_limit(chapter):
+    clear_terminal()
+    
+    while True:
+        print('Выбери раздел:')
+        print('1. Операнды до 10')
+        print('2. Операнды до 100')
+        print('3. Операнды до 1000')
+        print('4. Операнды до 10000')
+        print('5. Операнды до 100000')
+        print('6. Операнды до 1000000')
+        print('7. Выход в главное меню.')
+        
+        choice = input('>>> ')
+        
+        if choice == '1':
+            result_request(chapter, 10)
+        elif choice == '2':
+            result_request(chapter, 100)
+        elif choice == '3':
+            result_request(chapter, 1000)
+        elif choice == '4':
+            result_request(chapter, 10000)
+        elif choice == '5':
+            result_request(chapter, 100000)
+        elif choice == '6':
+            result_request(chapter, 1000000)
+        elif choice == '7':
             main()
         else:
             print('Неверный запрос. Попробуй ещё раз!')
@@ -185,14 +223,36 @@ def timer():
 # ---------------------- Выбор максимального числа для примеров
 def range_limit_choice():
     while True:
-        try:
-            range_limit = int(input('Напиши максимальное число, которое будет использовано в операциях: '))
-            if range_limit < 2:
-                print('Минимальное число для примеров должно быть больше 1!')
-            else:
-                return range_limit
-        except ValueError:
-            print('Пожалуйста, введи число!')
+        print('Выбери максимальный операнд:')
+        print('1. До 10')
+        print('2. До 100')
+        print('3. До 1000')
+        print('4. До 10000')
+        print('5. До 100000')
+        print('6. До 1000000')
+        
+        range_choice = input('>>> ')
+        
+        if range_choice == '1':
+            range_limit = 10
+            return range_limit
+        elif range_choice == '2':
+            range_limit = 100
+            return range_limit
+        elif range_choice == '3':
+            range_limit = 1000
+            return range_limit
+        elif range_choice == '4':
+            range_limit = 10000
+            return range_limit
+        elif range_choice == '5':
+            range_limit = 100000
+            return range_limit
+        elif range_choice == '6':
+            range_limit = 1000000
+            return range_limit
+        else:
+            print('Некорректный выбор. Введи ещё раз!')
             
 
 # ---------------------- Главное меню
