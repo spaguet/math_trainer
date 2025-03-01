@@ -157,16 +157,21 @@ def points_declension(points):
 # ---------------------- Генератор уравнения
 def math_generator(range_limit, chapter):
     a = random.randint(1, range_limit)
-    b = random.randint(1, range_limit)
     
     if chapter == 'Сложение':
         operator = '+'
+        b = random.randint(1, range_limit)
     elif chapter == 'Вычитание':
         operator = '-'
+        b = random.randint(1, a)
     elif chapter == 'Умножение':
         operator = '*'
-    else:
+        b = random.randint(1, range_limit)
+    elif chapter == 'Деление':
         operator = '/'
+        b = random.randint(1, a)
+        while a % b != 0:
+            b = random.randint(1, a)
         
     problem = f'{a} {operator} {b}'
     answer = eval(problem)
